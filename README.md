@@ -2,7 +2,7 @@
 Get daily quotes on TFT screen, controlled by an IL9341 controller, connected to an ESP8266
 
 Description:
-	The system displays at every 24 hours a new quote. After this, it goes to sleep to save as much power as possible. 
+    The system displays at every 24 hours a new quote. After this, it goes to sleep to save as much power as possible. 
 	It wakes up at aproximately 3 hours and 25 minutes ( the max time to sleep for ESP8266 ) and go to sleep again until the 24 hours have been reached. This is detected by decrementing a variable stored in the RTC memory which is not erased when the ESP8266 wakes up from sleep.
 
 Components:
