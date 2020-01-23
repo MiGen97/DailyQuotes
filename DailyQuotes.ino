@@ -1,3 +1,8 @@
+//this is for the RTC memory read/write functions
+extern "C"{
+  #include "user_interface.h" 
+}
+
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
@@ -11,17 +16,51 @@ const char* password = "yourPassword";
 // Define the pins from ESP8266 that are used
 // Pins defined with -1 are not used, 
 // but need to be set this way to avoid errors in Adafruit_ILI9341 library
-#define TFT_DC   0
-#define TFT_MOSI 1
+#define TFT_DC   12
+#define TFT_MOSI 14
 #define TFT_CS   15
-#define TFT_CLK  16
+#define TFT_CLK  13
 #define TFT_RST -1
 #define TFT_MISO -1
 
 // Create an object TFT for the display
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
+uint64_t sleepTimeUs=1e7; //ESP.deepSleepMax();
 
 void setup() {
+
+//to initialize the program runs on a ESP8266 uncommment the next two lines
+//the initalization means that the esp will display the next quote after aproximately 24hours
+//from the time of the initialization, if the power supply is not disconnected in the meantime
+//after this, the two lines bellow must be always commented
+  //uint32_t flag=0;
+  //uint32_t sleep=8;
+  //system_rtc_mem_write(64,&flag,4);
+  //system_rtc_mem_write(68,&sleep,4);
+
+  uint32_t flag;
+  uint32_t sleep;
+  system_rtc_mem_read(64,&flag,4);
+  if(!flag){
+    system_rtc_mem_read(68,&sleep,4);
+    sleep--;
+
+    if(sleep>0 && sleep<8){
+      //sleep for 3:25 hours:minutes asummed from this site: https://thingpulse.com/max-deep-sleep-for-esp8266/
+      system_rtc_mem_write(68,&sleep,4);
+//      tft.begin();
+//      tft.setRotation(1);
+//      tft.setCursor(0, 0);
+//      tft.setTextColor(ILI9341_BLACK);  tft.setTextSize(3);
+//      tft.println("Going to sleep");
+//      tft.println(sleep);
+      ESP.deepSleep(sleepTimeUs,WAKE_RF_DEFAULT);
+    }else{
+      flag=1;
+      system_rtc_mem_write(64,&flag,4);
+    }
+  }
+  
   tft.begin();
   tft.setRotation(1);
   tft.fillScreen(ILI9341_BLACK);
@@ -52,20 +91,36 @@ void setup() {
     if (httpCode > 0) {                                                       //Check the returning code
       String payload = http.getString();                                      //Get the request response payload
       tft.fillScreen(ILI9341_BLACK);
-      int startQuote= payload.indexOf("\"quote\":") + 10;
-      int startLength= payload.indexOf("\"length\":");
-      int startAuthor= payload.indexOf("\"author\":")+ 11;
-      int startTags= payload.indexOf("\"tags\":");
-      String qoute=payload.substring(startQuote,startLength-6);
-      String author=payload.substring(startAuthor,startTags-6);
+      int startIndex= payload.indexOf("\"quote\":") + 10;
+      String quote=payload.substring(startIndex);
+      int endIndex= quote.indexOf('\"');
+      quote=quote.substring(0,endIndex);
+      
+      startIndex= payload.indexOf("\"author\":")+ 11;
+      String author=payload.substring(startIndex);
+      endIndex= author.indexOf('\"');
+      author=author.substring(0,endIndex);
+      
       tft.setTextSize(1); 
       tft.setCursor(30, 110);
-      tft.println(qoute);                                                   //Print the response payload
+      tft.println(quote);                                                     //Print the response payload
       tft.setCursor(200, tft.getCursorY()+10);  
       tft.println(author);  
     }
     http.end();                                                               //Close connection
   }
+
+  flag=0;
+  sleep=8;
+  system_rtc_mem_write(64,&flag,4);
+  system_rtc_mem_write(68,&sleep,4);
+  
+  //sleep for 3:25 hours:minutes asummed from this site: https://thingpulse.com/max-deep-sleep-for-esp8266/
+  //tft.println("Going to sleep end!");
+  ESP.deepSleep(sleepTimeUs,WAKE_RF_DEFAULT);
+
+
+  //tft.displayOff();           https://forums.adafruit.com/viewtopic.php?f=47&t=148021
 }
 
 void loop() {
