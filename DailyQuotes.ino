@@ -22,13 +22,14 @@ const char* password = "yourPassword";
 #define TFT_CLK  13
 #define TFT_RST -1
 #define TFT_MISO -1
+#define TFT_POWER 5
 
 // Create an object TFT for the display
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
 uint64_t sleepTimeUs=1e7; //ESP.deepSleepMax();
 
 void setup() {
-
+  pinMode(TFT_POWER,OUTPUT);
 //to initialize the program runs on a ESP8266 uncommment the next two lines
 //the initalization means that the esp will display the next quote after aproximately 24hours
 //from the time of the initialization, if the power supply is not disconnected in the meantime
@@ -48,24 +49,20 @@ void setup() {
     if(sleep>0 && sleep<8){
       //sleep for 3:25 hours:minutes asummed from this site: https://thingpulse.com/max-deep-sleep-for-esp8266/
       system_rtc_mem_write(68,&sleep,4);
-//      tft.begin();
-//      tft.setRotation(1);
-//      tft.setCursor(0, 0);
-//      tft.setTextColor(ILI9341_BLACK);  tft.setTextSize(3);
-//      tft.println("Going to sleep");
-//      tft.println(sleep);
       ESP.deepSleep(sleepTimeUs,WAKE_RF_DEFAULT);
     }else{
       flag=1;
       system_rtc_mem_write(64,&flag,4);
     }
   }
-  
+
+  digitalWrite(TFT_POWER,HIGH);
   tft.begin();
   tft.setRotation(1);
   tft.fillScreen(ILI9341_BLACK);
   tft.setCursor(0, 0);
-  tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
+  tft.setTextColor(ILI9341_WHITE);  
+  tft.setTextSize(3);
   tft.println("Hello!");
   tft.setTextSize(1);
   tft.println("I am here to make your day better.");
@@ -116,11 +113,7 @@ void setup() {
   system_rtc_mem_write(68,&sleep,4);
   
   //sleep for 3:25 hours:minutes asummed from this site: https://thingpulse.com/max-deep-sleep-for-esp8266/
-  //tft.println("Going to sleep end!");
-  ESP.deepSleep(sleepTimeUs,WAKE_RF_DEFAULT);
-
-
-  //tft.displayOff();           https://forums.adafruit.com/viewtopic.php?f=47&t=148021
+  ESP.deepSleep(sleepTimeUs,WAKE_RF_DEFAULT);     //when the ESP go to sleep it turns low all the pins, including the TFT_POWER
 }
 
 void loop() {
