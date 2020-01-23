@@ -8,7 +8,6 @@ Components:
 1. ESP8266 (preferable and NodeMCU or any other development board, for easy connections )
 2. Any dispaly with IL9341 controller ( mine is a 2.8inch TFT_LCD 240*320 RGB screen )
 3. Wires to connect the ESP8266 and the Display
-
 Credits:
 1. Arduino IDE: https://www.arduino.cc/
 2. Set up ESP8266 in Arduino IDE: https://randomnerdtutorials.com/how-to-install-esp8266-board-arduino-ide/
