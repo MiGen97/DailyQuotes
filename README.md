@@ -5,6 +5,12 @@ Description:
     The system displays for one hour, at every 24 hours a new quote. After this, it goes to sleep to save as much power as possible. 
 	It wakes up at aproximately 3 hours and 25 minutes ( the max time to sleep for ESP8266 ) and go to sleep again seven times (23 hours). This is detected by decrementing a variable stored in the RTC memory which is not erased when the ESP8266 wakes up from sleep.
 
+Steps:
+1. Install the libraries for TFT (Credits 5.TFT libraries)
+2. Set up the ESP8266 (Credits 2.Set up ESP8266 in Arduino IDE)
+3. Build the electrical circuit
+4. Upload the code with the needed changes (ssid and password)
+
 Components:
 1. ESP8266 (preferable and NodeMCU or any other development board, for easy connections );
 2. Any dispaly with IL9341 controller ( mine is a 2.8inch TFT_LCD 240*320 RGB screen );
