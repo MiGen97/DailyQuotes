@@ -1,6 +1,6 @@
 //this is for the RTC memory read/write functions
 extern "C"{
-  #include "user_interface.h" 
+  #include "user_interface.h"
 }
 
 #include <ESP8266WiFi.h>
@@ -67,14 +67,16 @@ void setup() {
   tft.setTextSize(1);
   tft.println("I am here to make your day better.");
   tft.println("But first, let me connect to the internet!");
+  
   WiFi.begin(ssid, password);
   tft.print("Connecting");
   while (WiFi.status() != WL_CONNECTED) {
     tft.print(".");
     delay(500);
   }
+  wifi_set_sleep_type(LIGHT_SLEEP_T);
   
-  tft.setCursor(tft.getCursorX(), tft.getCursorY()+10);
+  tft.setCursor(0, tft.getCursorY()+10);
   tft.setTextSize(2);  
   tft.println("Done!");
   tft.setCursor(tft.getCursorX(), tft.getCursorY()+10);
@@ -111,7 +113,10 @@ void setup() {
   sleep=8;
   system_rtc_mem_write(64,&flag,4);
   system_rtc_mem_write(68,&sleep,4);
-  
+
+  tft.println("Going to sleep!");
+  //light sleep for 4 seconds
+  delay(40000);
   //sleep for 3:25 hours:minutes asummed from this site: https://thingpulse.com/max-deep-sleep-for-esp8266/
   ESP.deepSleep(sleepTimeUs,WAKE_RF_DEFAULT);     //when the ESP go to sleep it turns low all the pins, including the TFT_POWER
 }
