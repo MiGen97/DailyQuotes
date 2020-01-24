@@ -23,8 +23,8 @@ extern "C" {                      //this library is used for the RTC memory read
 uint64_t sleepTimeUs = 1e6; //ESP.deepSleepMax() for approximately 3 hours and 25 minutes
                             //1e6                for 1 second
                             
-const char* ssid = "RNT-Cosmin";        //the SSID data
-const char* password = "rares2016";     //
+const char* ssid = "yourSSID";          //the SSID data
+const char* password = "yourPassword";  //
 byte networkTimeOut=15;                 //timeout for WiFi connection, in seconds    
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);    // Create a TFT object for the display
