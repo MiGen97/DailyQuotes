@@ -20,3 +20,4 @@ Credits:
 6. RTC memory guidance: https://www.esp8266.com/viewtopic.php?p=20009
 						https://github.com/esp8266/esp8266-wiki/wiki/Memory-Map
 						https://github.com/SensorsIot/ESP8266-RTC-Memory/blob/master/RTCmemTest/RTCmemTest.ino
+7. Light sleep guidance: https://community.blynk.cc/t/esp8266-light-sleep/13584
