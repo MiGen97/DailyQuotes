@@ -18,13 +18,13 @@ extern "C" {                      //this library is used for the RTC memory read
 #define TFT_MISO -1               //
 
 
-#define HOUR 36e5     //define the values for the time to sleep
-                      // one hour in milisecond (3.600.000 miliseconds=3.600 seconds=60 minutes=1 hour)
-uint64_t sleepTimeUs = 1e6; //ESP.deepSleepMax() for approximately 3 hours and 25 minutes
-                            //1e6                for 1 second
+#define HOUR (unsigned long)36e5     //define the values for the time to sleep (unsigned long is used as parameter for delay()
+                                     //one hour in milisecond (3.600.000 miliseconds=3.600 seconds=60 minutes=1 hour)
+uint64_t sleepTimeUs = ESP.deepSleepMax(); //ESP.deepSleepMax() for approximately 3 hours and 25 minutes
+                                           //1e6                for 1 second
                             
 const char* ssid = "yourSSID";          //the SSID data
-const char* password = "yourPassword";  //
+const char* password = "yourPassword";  //  
 byte networkTimeOut=15;                 //timeout for WiFi connection, in seconds    
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);    // Create a TFT object for the display
@@ -46,7 +46,7 @@ void setup() {
   system_rtc_mem_read(68, &sleepCounter, 4); //take the counter 
   --sleepCounter;                            // decrement it to mark another wakeUp
 
-  if ( 0 <= sleepCounter && sleepCounter < 7) { //check if the ESP8266 had sleept enough ( 7 times ) 
+  if ( 0 < sleepCounter && sleepCounter < 7) { //check if the ESP8266 had sleept enough ( 7 times ) 
                                                 //if the counter had not reached zero
     system_rtc_mem_write(68, &sleepCounter, 4);  //write the new counter to the RTC memory
     ESP.deepSleep(sleepTimeUs, WAKE_RF_DEFAULT); //and go to deepSleep, again, for approximately 3 hours and 25 minutes
@@ -74,10 +74,10 @@ void setup() {
     delay(1000);                                                            //
     --networkTimeOut;                                                       //Check if is network TimeOut
     if(networkTimeOut<=0){                                                  //
-      tft.println("");                                                      //
+      tft.setCursor(0, tft.getCursorY() + 30);                              //
       tft.setTextSize(2);                                                   //
       tft.println("Can't connect to the WiFi!");                            //
-      tft.println("Please check the connection info (ssid and password)!"); //
+      tft.println("Please check the WiFi info (ssid and password)!"); //
       delay(HOUR);                                                          //
     }                                                                       //
   }                                                                         //
@@ -125,8 +125,8 @@ void setup() {
   delay(HOUR);                                    //light sleep for one hour
   tft.fillScreen(ILI9341_BLACK);                  //Clear the display
 
+  digitalWrite(TFT_POWER, LOW);                   //turn off the power supply for the TFT display
   ESP.deepSleep(sleepTimeUs, WAKE_RF_DEFAULT);    //sleep for approximately 3 hours and 25 minutes
-                                                  //when the ESP go to sleep it turns low all the pins, including the TFT_POWER
 }
 
 void loop() {
