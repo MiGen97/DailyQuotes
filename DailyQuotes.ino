@@ -46,7 +46,7 @@ void setup() {
   system_rtc_mem_read(68, &sleepCounter, 4); //take the counter 
   --sleepCounter;                            // decrement it to mark another wakeUp
 
-  if ( 0 < sleepCounter && sleepCounter < 7) { //check if the ESP8266 had sleept enough ( 7 times ) 
+  if ( 0 <= sleepCounter && sleepCounter < 7) { //check if the ESP8266 had sleept enough ( 7 times ) 
                                                 //if the counter had not reached zero
     system_rtc_mem_write(68, &sleepCounter, 4);  //write the new counter to the RTC memory
     ESP.deepSleep(sleepTimeUs, WAKE_RF_DEFAULT); //and go to deepSleep, again, for approximately 3 hours and 25 minutes
