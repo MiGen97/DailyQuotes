@@ -21,37 +21,54 @@ extern "C" {                      //this library is used for the RTC memory read
 #define HOUR (unsigned long)36e5     //define the values for the time to sleep (unsigned long is used as parameter for delay()
                                      //one hour in milisecond (3.600.000 miliseconds=3.600 seconds=60 minutes=1 hour)
 uint64_t sleepTimeUs = 123e8;        //123e8 for approximately 3 hours and 25 minutes
-                                     //1e6                for 1 second
-        
+                                     //1e6   for 1 second
+uint32_t sleepCounter;               //the sleep counter is used to make the ESP8266 sleep for 24 hours
+                                     //ESP8266 can deepSleep for maximum 3 hours and 25 minutes
+                                     //so we put the ESP8266 to deepSleep 7 times
+                                     //3*7=21hours and 25*7=175minutes=2hour, in total 23 hours of deepSleep
+
+
 const char* ssid = "yourSSID";          //the SSID data
-const char* password = "yourPassword";  // 
-byte networkTimeOut=15;                 //timeout for WiFi connection, in seconds    
+const char* password = "yourPassword";  //    
+byte networkTimeOut=20;                 //timeout for WiFi connection, in seconds    
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);    // Create a TFT object for the display
 
 void setup() {
+  
+  wifi_set_sleep_type(LIGHT_SLEEP_T);       //Set the lightSleep mode when the delay() function is called
+  
+  checkSleepCounter();
+  
+  turnDisplayOn();
+  
+  tft.println("Hello!");                                         //Print the startup message
+  tft.setTextSize(1);                                            //
+  tft.println("I am here to make your day better.");             //
+  tft.println("But first, let me connect to the internet!");     //
 
-  //to initialize the program that runs on a ESP8266 uncommment the next two lines
-  //the initalization means that the ESP8266 will display the next quote after aproximately 24hours
-  //from the time of the initialization, if the power supply is not disconnected in this interval
-  //after this, the two lines bellow must be commented and the code reuploaded on ESP8266
-  //uint32_t sleepCounter=7;
-  //system_rtc_mem_write(68,&sleepCounter,4);
+  connectWiFi();
+  
+  tft.setCursor(0, tft.getCursorY() + 10);                    //Inform the user that the network connection had succeded
+  tft.setTextSize(2);                                         //
+  tft.println("Done!");                                       //
+  tft.setCursor(tft.getCursorX(), tft.getCursorY() + 10);     //
+  tft.setTextSize(1);                                         //
+  tft.println("Let's find an interesting quote!");            //
 
-  uint32_t sleepCounter;  //the sleep counter is used to make the ESP8266 sleep for 24 hours
-                          //ESP8266 can deepSleep for maximum 3 hours and 25 minutes
-                          //so we put the ESP8266 to deepSleep 7 times
-                          //3*7=21hours and 25*7=175minutes=2hour, in total 23 hours of deepSleep
+  displayQuote();
 
-  system_rtc_mem_read(68, &sleepCounter, 4); //take the counter 
-  --sleepCounter;                            // decrement it to mark another wakeUp
+  initializeSleepCounter();
+  delay(HOUR);                                    //light sleep for one hour
+  
+  goSleep();
+}
 
-  if ( 0 <= sleepCounter && sleepCounter < 7) { //check if the ESP8266 had sleept enough ( 7 times ) 
-                                                //if the counter had not reached zero
-    system_rtc_mem_write(68, &sleepCounter, 4);  //write the new counter to the RTC memory
-    ESP.deepSleep(sleepTimeUs, WAKE_RF_DEFAULT); //and go to deepSleep, again, for approximately 3 hours and 25 minutes
-  }
+void loop() {
+  //do nothing
+}
 
+void turnDisplayOn(){
   pinMode(TFT_POWER, OUTPUT);        //if the couter had reached zero
   digitalWrite(TFT_POWER, HIGH);     //turn on the power supply for the TFT display
 
@@ -61,12 +78,34 @@ void setup() {
   tft.setCursor(0, 0);                //
   tft.setTextColor(ILI9341_WHITE);    //
   tft.setTextSize(3);                 //
+}
 
-  tft.println("Hello!");                                         //Print the startup message
-  tft.setTextSize(1);                                            //
-  tft.println("I am here to make your day better.");             //
-  tft.println("But first, let me connect to the internet!");     //
+void goSleep(){
+  tft.fillScreen(ILI9341_BLACK);                  //Clear the display
+  digitalWrite(TFT_POWER, LOW);                   //turn off the power supply for the TFT display
+  ESP.deepSleep(sleepTimeUs, WAKE_RF_DEFAULT);    //go to deepsleep
+}
 
+void checkSleepCounter(){
+  system_rtc_mem_read(68, &sleepCounter, 4); //take the counter 
+  --sleepCounter;                            // decrement it to mark another wakeUp
+
+  if ( 0 < sleepCounter && sleepCounter < 7) { //check if the ESP8266 had sleept enough ( 7 times ) 
+                                                //if the counter had not reached zero
+    system_rtc_mem_write(68, &sleepCounter, 4);  //write the new counter to the RTC memory
+    
+    goSleep();
+  }
+}
+
+void initializeSleepCounter(){
+  //the initalization means that the ESP8266 will display the next quote after aproximately 24hours
+  //from the time of the power on cycle, if the power supply is not disconnected in this interval
+  sleepCounter=7;
+  system_rtc_mem_write(68,&sleepCounter,4);
+}
+
+void connectWiFi(){
   WiFi.begin(ssid, password);                                               //Try to connect to the WiFi
   tft.print("Connecting");                                                  //
   while (WiFi.status() != WL_CONNECTED) {                                   //
@@ -81,17 +120,9 @@ void setup() {
       delay(HOUR);                                                          //
     }                                                                       //
   }                                                                         //
+}
 
-  wifi_set_sleep_type(LIGHT_SLEEP_T);       //Set the lightSleep mode when the delay() function is called
-
-  tft.setCursor(0, tft.getCursorY() + 10);                    //Inform the user that the network connection had succeded
-  tft.setTextSize(2);                                         //
-  tft.println("Done!");                                       //
-  tft.setCursor(tft.getCursorX(), tft.getCursorY() + 10);     //
-  tft.setTextSize(1);                                         //
-  tft.println("Let's find an interesting quote!");            //
-
-
+void displayQuote(){
   if (WiFi.status() == WL_CONNECTED) {                                        //Check WiFi connection status
     HTTPClient http;                                                          //Declare an object of class HTTPClient
     http.begin("http://quotes.rest/qod.json?category=inspire");               //Specify request destination
@@ -118,17 +149,4 @@ void setup() {
     }
     http.end();                                                               //Close connection
   }
-
-  sleepCounter = 7;                                //reset the counter to 7 
-  system_rtc_mem_write(68, &sleepCounter, 4);      //write it to the RTC memory
-    
-  delay(HOUR);                                    //light sleep for one hour
-  tft.fillScreen(ILI9341_BLACK);                  //Clear the display
-
-  digitalWrite(TFT_POWER, LOW);                   //turn off the power supply for the TFT display
-  ESP.deepSleep(sleepTimeUs, WAKE_RF_DEFAULT);    //sleep for approximately 3 hours and 25 minutes
-}
-
-void loop() {
-  //do nothing
 }
