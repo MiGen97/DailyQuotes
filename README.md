@@ -2,8 +2,10 @@
 Get daily quotes on TFT screen, controlled by an IL9341 controller, connected to an ESP8266
 
 Description:
-    The system displays for one hour, at every 24 hours a new quote. After this, it goes to sleep to save as much power as possible. 
-	It wakes up at aproximately 3 hours and 25 minutes ( the max time to sleep for ESP8266 ) and go to sleep again seven times (23 hours). This is detected by decrementing a variable stored in the RTC memory which is not erased when the ESP8266 wakes up from sleep.
+	The system displays for one hour, at every 24 hours a new quote. Before it starts to display the quote, it connects to the NTP Server and store in rtc user memory the current hour and minutes. After this, it goes to deep sleep to save as much power as possible. 
+	It wakes up at aproximately 3 hours and 25 minutes ( the max time to sleep for ESP8266 ) and go to sleep again seven times (23 hours). This is detected by decrementing a variable stored in the RTC memory which is not erased when the ESP8266 goes to deep sleep. 
+	When the ESP8266 wakes up for the seventh time, it checks if the current time (taken from NTP Server, again) is equal to the stored time from the rtc user memory. If it is, then it will display the new quote. If it is not, the ESP8266 will go to sleep for the remaining time.
+	
 
 Steps:
 1. Install the libraries for TFT (Credits 5.TFT libraries)
