@@ -1,5 +1,7 @@
 # DailyQuotes
-Get daily quotes on TFT screen, controlled by an IL9341 controller, connected to an ESP8266
+Get daily quotes on TFT screen, controlled by an IL9341 controller, connected to an ESP8266.
+
+Check the [DEMO!](https://www.youtube.com/watch?v=v00FHcqeyeM)! :smirk:
 
 I.How it works?
 	Well, it works like this:
@@ -34,4 +36,10 @@ IV.Credits:
  7. Light sleep guidance: https://community.blynk.cc/t/esp8266-light-sleep/13584
 
 V.Electrical circuit:
-![Circuit](/Circuit.PNG)
+![Circuit](/Images/Circuit.PNG)
+
+VI.The project ( on layers ):
+![Bottom_ESP8266](/Images/Bottom_ESP8266.jpg)
+![Bottom_Circuit](/Images/Bottom_Circuit.jpg)
+![Top_Circuit](/Images/Top_Circuit.jpg)
+![Top_Display](/Images/Top_Display.jpg)
