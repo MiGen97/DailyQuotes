@@ -13,10 +13,15 @@ I.How it works?
 II.What I learned?
 
  1.ESP8266 deepSleepMode - enable/disable, setup, how it works, functional parameters(Amperage, Voltage, max time, RTC clock deviation);
+ 
  2.ESP8266 lightSleepMode - enable/disable, setup, how it works, functional parameters(Amperage, Voltage, max time);
+ 
  3.ESP8266 WiFi - enable/disable, setup, functional parameters(Amperage, Voltage, max time);
+ 
  4.ESP8266 RTC user memory - read/write in RTC user memory, memory mapping for the include RTC from the ESP8266, bit shifting;
+ 
  5.ESP8266 Client/NTP - Get() from a server, Client Mode, how NTP works, NTP client, Json parsing with basic string functions;
+ 
  6.ILI9341 TFT controller - memory mapping, internal commands, functional parameters;
 
 III.Steps to implement:
