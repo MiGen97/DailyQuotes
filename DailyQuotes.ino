@@ -69,6 +69,7 @@ void setup() {
 
   initializeSleepCounter();
   storeCurrentTime();
+  
   delay(HOUR);                                    //light sleep for one hour
   
   goSleep();
@@ -181,14 +182,10 @@ void displayQuote(){
 void syncWithNTPServer(){
   if( sleepCounter == 0 ) {
     restorePreviousTime();                                                    //Get previous time from RTC user memory
-    Serial.begin(115200);                                                     //Used for debugging
-    Serial.println("Connecting to WiFi");
     WiFi.begin(ssid, password);                                               //Try to connect to the WiFi
     while (WiFi.status() != WL_CONNECTED) {                                   //
-      Serial.print(".");                                                      //
       delay(500);                                                             //
     }                                                                         //
-    Serial.end();
     timeClient.begin();
     delay(1000);
     timeClient.update();
@@ -199,7 +196,8 @@ void syncWithNTPServer(){
     if( timeClient.getHours() == hours ){
       if( (timeClient.getMinutes()- minutes > -5) && (timeClient.getMinutes()-minutes < 0) ){ //if there are less than 5 minutes 
         delay((minutes-timeClient.getMinutes())*60*1000);                                     //light sleep for that time and then display quote
-      }else{                                                                                  //else
+      }
+      if(timeClient.getMinutes()- minutes < -5){                                                                                  //else
         ESP.deepSleep( ((minutes-timeClient.getMinutes())*60*1000*1000), WAKE_RF_DEFAULT);    //go to deepsleep for the remaining time
       }
     }

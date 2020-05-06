@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+a_test_function.ino
+
+Test_Scripts/Log.txt
+
+Test_Scripts/SerialLogger.py
