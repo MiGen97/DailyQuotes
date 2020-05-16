@@ -1,7 +1,7 @@
 # DailyQuotes
 Get daily quotes on TFT screen, controlled by an IL9341 controller, connected to an ESP8266.
 
-Check the [DEMO!](https://www.youtube.com/watch?v=v00FHcqeyeM)! :smirk:
+Check the [DEMO!](https://www.youtube.com/watch?v=jz5i-B8MBm4)! :smirk:
 
 I.How it works?
  1. When the system is pluged in to power, it will connect to the WiFi (the connection informations --- ssid and password ---, must be configured in code ), will display an inspirational quote for one hour and go to sleep for 24 hours. After the long sleep, it will connect again to the WiFi, display another quote and go to sleep. Again and again.
